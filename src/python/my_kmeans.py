@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 #Define const
 CLUSTER_NUM = 4
 # ベクトルを構成する要素数 画像ならRGBで３次元かな
-ELEMENT_NUM = 2 
+ELEMENT_NUM = 3 
 # ベクトルのかず
 VECTOR_NUM = 100
 
@@ -46,9 +46,9 @@ def clustering(vectors, label_count=CLUSTER_NUM, learning_count_max=1000):
     :param learning_count_max:
     :return:
     """
-    label_vector = random.randint(0, high=label_count, size=VECTOR_NUM)
+    label_vector = random.randint(0, high=label_count, size=vectors.shape[0])
     #一つ前のStepで割り当てられたラベル。終了条件の判定に使用
-    old_label_vector = np.array(VECTOR_NUM) 
+    old_label_vector = np.array(vectors.shape[0]) 
     #各クラスタの重心vector
     # center_vectors = [[0 for i in range(len(vectors[0]))] for label in range(label_count)]
     center_vectors = np.zeros((CLUSTER_NUM, ELEMENT_NUM))
@@ -57,6 +57,7 @@ def clustering(vectors, label_count=CLUSTER_NUM, learning_count_max=1000):
         #各クラスタの重心vectorの作成
         for vec, label in zip(vectors, label_vector):
             center_vectors[label] = [c+v for c, v in zip(center_vectors[label], vec)]
+
         for i, center_vector in enumerate(center_vectors):
             center_vectors[i] = [v/len(np.where(label_vector==i)[0]) for v in center_vector]
         #各ベクトルのラベルの再割当て
@@ -64,38 +65,54 @@ def clustering(vectors, label_count=CLUSTER_NUM, learning_count_max=1000):
             label_vector[i] = near(vec, center_vectors)
 
         #前Stepと比較し、ラベルの割り当てに変化が無かったら終了
-        print(type(old_label_vector))
-        print(type(label_vector))
         if (old_label_vector == label_vector).any():
             break
         #ラベルのベクトルを保持
         old_label_vector = [l for l in label_vector]
     return center_vectors
 
+def k_means(vectors, cluster_num, dim, itr_num):
+    """
+    :param vectors: input vectors ex)input img
+    :param cluster_num: how many category you want to divide space
+    :param itr_num: max number of update centroid
+    :return label_vectors: return label of each input vector
+    """
 
-input_vector = random.randn(2)
+    label_vectors = np.zeros(vectors.shape[0])
 
-sample_vectors = vectors = random.randn(VECTOR_NUM, ELEMENT_NUM)
-
-center_vectors = clustering(sample_vectors)
-
-input_label = near(input_vector, center_vectors)
-
-if(input_label == 0): in_color = 'green'
-elif(input_label == 1): in_color = 'yellow'
-elif(input_label == 2): in_color = 'red'
-else: in_color = 'blue'
-
-plt.plot(input_vector[0],input_vector[1],'o',color=in_color)
-
-
-for vector in sample_vectors:
-    label = near(vector,center_vectors)
-    if(label == 0): color = 'green'
-    elif(label == 1): color = 'yellow'
-    elif(label == 2): color = 'red'
-    else: color = 'blue'
-    plt.plot(vector[0],vector[1],'x',color=color)
+    center_vectors = clustering(vectors, cluster_num, itr_num)
+    
+    for i, vector in enumerate(vectors):
+        label_vectors[i] = near(vector, center_vectors)
+    
+    return label_vectors
 
 
-plt.show()
+# input_vector = random.randn(2)
+
+# sample_vectors = vectors = random.randn(VECTOR_NUM, ELEMENT_NUM)
+
+# center_vectors = clustering(sample_vectors)
+
+# input_label = near(input_vector, center_vectors)
+
+# if(input_label == 0): in_color = 'green'
+# elif(input_label == 1): in_color = 'yellow'
+# elif(input_label == 2): in_color = 'red'
+# else: in_color = 'blue'
+
+# plt.plot(input_vector[0],input_vector[1],'o',color=in_color)
+
+# label_list = k_means(sample_vectors, 4, 2, 1000)
+
+# for vector, label in zip(sample_vectors, label_list):
+#     # label = near(vector,center_vectors)
+#     if(label == 0): color = 'green'
+#     elif(label == 1): color = 'yellow'
+#     elif(label == 2): color = 'red'
+#     else: color = 'blue'
+#     plt.plot(vector[0],vector[1],'x',color=color)
+
+
+# plt.show()
