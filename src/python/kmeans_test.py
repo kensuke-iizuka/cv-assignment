@@ -5,7 +5,7 @@ from klib import *
 from my_kmeans import k_means
 
 img_path = "../img/test.jpg"
-dist_img_path = "../img/result.jpg"
+dist_img_path = "../img/kmeans_result.jpg"
 
 src_img = read_image(img_path)
 dist_img = src_img
@@ -45,5 +45,5 @@ for i in range(img_height):
             dist_img[i][j][2] = 155
 
 
-save_image(dist_img, dist_img_path)
-show_image(dist_img)
+# save_image(dist_img, dist_img_path)
+# show_image(dist_img)
