@@ -19,11 +19,19 @@ label_list = np.zeros((img_height*img_width))
 
 input_vectors = src_img.reshape(img_height * img_width, 3)
 label_list = k_means(input_vectors, 4, 3, 1000)
-label_list = label_list.reshape(img_height, img_width)
+
+label1 = len(np.where(label_list==0)[0])
+label2 = len(np.where(label_list==1)[0])
+label3 = len(np.where(label_list==2)[0])
+label4 = len(np.where(label_list==3)[0])
+
+re_label_list = label_list.reshape(img_height, img_width)
+
+
 
 for i in range(img_height):
     for j in range(img_width):
-        label = label_list[i][j]
+        label = re_label_list[i][j]
         if(label == 0): 
             dist_img[i][j][0] = 0 # B
             dist_img[i][j][1] = 0 # G
