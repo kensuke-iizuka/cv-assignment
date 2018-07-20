@@ -12,7 +12,7 @@ VECTOR_NUM = 100
 def euclid_dist(vector1, vector2):
     """
     vector1とvector2のユークリッド距離を返す
-    :param vector1:
+    :param vector1: size = dim
     :param vector2:
     :return:
     """
@@ -26,8 +26,8 @@ def euclid_dist(vector1, vector2):
 def near(vector, center_vectors):
     """
     vectorに対し、尤も近いラベルを返す
-    :param vector:
-    :param center_vectors(dimension, cluster_num):
+    :param vector: size = dim
+    :param center_vectors(size = (dimension, cluster_num)):
     :return:
     """
     dist_list = np.zeros(center_vectors.shape[0])
@@ -38,22 +38,21 @@ def near(vector, center_vectors):
     return np.argmin(dist_list) 
 
 
-def clustering(vectors, label_count=CLUSTER_NUM, learning_count_max=1000):
+def clustering(vectors, cluster_num, max_itr=1000):
     """
     K-meansを行い、各ラベルの重心を返す
-    :param vectors:
-    :param label_count:
-    :param learning_count_max:
-    :return:
+    :param vectors: size=(height*width, dim)
+    :return: center_vectors
     """
-    label_vector = random.randint(0, high=label_count, size=vectors.shape[0])
+    label_vector = random.randint(0, high=cluster_num, size=vectors.shape[0])
+    # print(label_vector.shape)
     #一つ前のStepで割り当てられたラベル。終了条件の判定に使用
     old_label_vector = np.array(vectors.shape[0]) 
     #各クラスタの重心vector
     # center_vectors = [[0 for i in range(len(vectors[0]))] for label in range(label_count)]
-    center_vectors = np.zeros((CLUSTER_NUM, ELEMENT_NUM))
+    center_vectors = np.zeros((cluster_num, vectors.shape[1]))
 
-    for step in range(learning_count_max):
+    for step in range(max_itr):
         #各クラスタの重心vectorの作成
         for vec, label in zip(vectors, label_vector):
             center_vectors[label] = [c+v for c, v in zip(center_vectors[label], vec)]
@@ -73,46 +72,21 @@ def clustering(vectors, label_count=CLUSTER_NUM, learning_count_max=1000):
 
 def k_means(vectors, cluster_num, dim, itr_num):
     """
-    :param vectors: input vectors ex)input img
+    :param vectors: input vectors ex)input img(size = (height, width, dim))
     :param cluster_num: how many category you want to divide space
     :param itr_num: max number of update centroid
-    :return label_vectors: return label of each input vector
+    :return label_vectors,center_vectors: return label of each input vector
     """
 
-    label_vectors = np.zeros(vectors.shape[0])
+    label_vectors = np.zeros(vectors.shape[0] * vectors.shape[1])
+    vectors = vectors.reshape((vectors.shape[0] * vectors.shape[1], vectors.shape[2]))
+    print(vectors.shape)
 
     center_vectors = clustering(vectors, cluster_num, itr_num)
     
     for i, vector in enumerate(vectors):
         label_vectors[i] = near(vector, center_vectors)
     
-    return label_vectors
-
-
-# input_vector = random.randn(2)
-
-# sample_vectors = vectors = random.randn(VECTOR_NUM, ELEMENT_NUM)
-
-# center_vectors = clustering(sample_vectors)
-
-# input_label = near(input_vector, center_vectors)
-
-# if(input_label == 0): in_color = 'green'
-# elif(input_label == 1): in_color = 'yellow'
-# elif(input_label == 2): in_color = 'red'
-# else: in_color = 'blue'
-
-# plt.plot(input_vector[0],input_vector[1],'o',color=in_color)
-
-# label_list = k_means(sample_vectors, 4, 2, 1000)
-
-# for vector, label in zip(sample_vectors, label_list):
-#     # label = near(vector,center_vectors)
-#     if(label == 0): color = 'green'
-#     elif(label == 1): color = 'yellow'
-#     elif(label == 2): color = 'red'
-#     else: color = 'blue'
-#     plt.plot(vector[0],vector[1],'x',color=color)
-
-
-# plt.show()
+    label_vectors = np.uint8(label_vectors.reshape((label_vectors.shape[0], 1)))
+    
+    return label_vectors, center_vectors
