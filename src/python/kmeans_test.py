@@ -4,7 +4,7 @@ import matplotlib as plt
 from klib import *
 from my_kmeans import k_means
 
-img_path = "../img/test.jpg"
+img_path = "../img/umi.jpg"
 dist_img_path = "../img/kmeans_result.jpg"
 
 src_img = read_image(img_path)
@@ -33,25 +33,25 @@ for i in range(img_height):
     for j in range(img_width):
         label = re_label_list[i][j]
         if(label == 0): 
-            dist_img[i][j][0] = 0 # B
-            dist_img[i][j][1] = 0 # G
-            dist_img[i][j][2] = 255 # R
+            dist_img[i][j][0] += src_img[i][j][0] / label1 # B
+            dist_img[i][j][1] += src_img[i][j][1] / label1 # G
+            dist_img[i][j][2] += src_img[i][j][2] / label1 # R
 
         elif(label == 1): 
-            dist_img[i][j][0] = 0
-            dist_img[i][j][1] = 255
-            dist_img[i][j][2] = 0
+            dist_img[i][j][0] += src_img[i][j][0] / label2
+            dist_img[i][j][1] += src_img[i][j][1] / label2
+            dist_img[i][j][2] += src_img[i][j][2] / label2
 
         elif(label == 2): 
-            dist_img[i][j][0] = 255
-            dist_img[i][j][1] = 0
-            dist_img[i][j][2] = 0
+            dist_img[i][j][0] += src_img[i][j][0] / label3
+            dist_img[i][j][1] += src_img[i][j][1] / label3
+            dist_img[i][j][2] += src_img[i][j][2] / label3
 
         else: 
-            dist_img[i][j][0] = 115
-            dist_img[i][j][1] = 115
-            dist_img[i][j][2] = 155
+            dist_img[i][j][0] += src_img[i][j][0] / label4
+            dist_img[i][j][1] += src_img[i][j][1] / label4
+            dist_img[i][j][2] += src_img[i][j][2] / label4
 
 
-# save_image(dist_img, dist_img_path)
+save_image(dist_img, dist_img_path)
 # show_image(dist_img)
