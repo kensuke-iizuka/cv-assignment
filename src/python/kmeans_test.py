@@ -4,8 +4,8 @@ import matplotlib as plt
 from klib import *
 from my_kmeans import k_means
 
-img_path = "../img/umi.jpg"
-dist_img_path = "../img/kmeans_result.jpg"
+img_path = "../img/metro.jpg"
+dist_img_path = "../img/metro_result.jpg"
 
 src_img = read_image(img_path)
 
@@ -23,7 +23,6 @@ label_list = np.zeros((img_height * img_width, 1))
 center_list = np.zeros((cluster_num, img_dim))
 
 label_list, center_list = k_means(src_img, cluster_num, 3, 100)
-print(center_list.shape)
 
 center_list = np.uint8(center_list)
 res = center_list[label_list.flatten()]

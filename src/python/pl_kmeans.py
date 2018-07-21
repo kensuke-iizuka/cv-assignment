@@ -16,7 +16,7 @@ label_list = np.zeros((100, 1))
 center_list = np.zeros((cluster_num, 2))
 
 # clustering sample vectors
-label_list, center_list = k_means(sample_vectors, cluster_num, 3, 100)
+label_list, center_list = k_means(sample_vectors, cluster_num, 3, 300)
 
 
 input_label = near(input_vector, center_list)
@@ -35,6 +35,9 @@ for vector, label in zip(sample_vectors, label_list):
     elif(label == 2): color = 'red'
     else: color = 'blue'
     plt.plot(vector[0],vector[1],'x',color=color)
+
+for center in center_list:
+    plt.plot(center[0],center[1],'s',color='orange')
 
 plt.show()
 fig = plt.subplots()

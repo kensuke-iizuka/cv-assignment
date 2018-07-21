@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 class GaussianMixture(object):
 
     def __init__(self, n_component):
@@ -48,19 +47,7 @@ class GaussianMixture(object):
     #Eステップ
     def expectation(self, X):
         resps = self.weights * self.gauss(X)
-        print(resps.shape)
-
-        # resps_false_sum = resps.sum(axis=1, keepdims=False)
-        # resps_true_sum = resps.sum(axis=1, keepdims=True)
-
-        # np.savetxt('true_resps.csv',resps_true_sum,delimiter=',')
-        # np.savetxt('false_resps.csv',resps_false_sum,delimiter=',')
-
-        # print("true resps shape:{}".format(resps_true_sum.shape))
-        # print("false resps shape:{}".format(resps_false_sum.shape))
-        # print("gauss shape:{}".format(self.gauss(X).shape))
-        resps /= resps.sum(axis=0, keepdims=True)
-        print(resps.shape)
+        resps /= resps.sum(axis=-1, keepdims=True)
         return resps
     
     #Mステップ
@@ -79,28 +66,25 @@ class GaussianMixture(object):
     # クラスタリング
     def classify(self, X):
         joint_prob = self.weights * self.gauss(X)
-        # print(joint_prob.shape)
         return np.argmax(joint_prob, axis=1)
 
 
 def create_toy_data():
     x1 = np.random.normal(size=(100, 2))
-    # x1 += np.array([-5, -5])
+    x1 += np.array([-1, -1])
     x2 = np.random.normal(size=(100, 2))
-    # x2 += np.array([5, -5])
+    x2 += np.array([1, -1])
     x3 = np.random.normal(size=(100, 2))
-    # x3 += np.array([0, 5])
+    x3 += np.array([0, 2])
     return np.vstack((x1, x2, x3))
 
 
 def main():
     X = create_toy_data()
-    print(X.shape)
 
     model = GaussianMixture(4)
-    model.fit(X, iter_max=100)
+    model.fit(X, iter_max=10000)
     labels = model.classify(X)
-    print(labels)
 
     x_test, y_test = np.meshgrid(np.linspace(-10, 10, 100), np.linspace(-10, 10, 100))
     X_test = np.array([x_test, y_test]).reshape(2, -1).transpose()

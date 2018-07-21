@@ -1,7 +1,11 @@
 import numpy as np
 import cv2 as cv
+from klib import *
 
-img = cv.imread('../img/umi.jpg')
+img = cv.imread('../img/metro.jpg')
+dist_img_path = "../img/metro_opencv.jpg"
+
+# src_img = read_image(img_path)
 Z = img.reshape((-1,3))
 # convert to np.float32
 Z = np.float32(Z)
@@ -13,6 +17,7 @@ ret,label,center=cv.kmeans(Z,K,None,criteria,10,cv.KMEANS_RANDOM_CENTERS)
 center = np.uint8(center)
 res = center[label.flatten()]
 res2 = res.reshape((img.shape))
-cv.imshow('res2',res2)
-cv.waitKey(0)
-cv.destroyAllWindows()
+save_image(res2, dist_img_path)
+# cv.imshow('res2',res2)
+# cv.waitKey(0)
+# cv.destroyAllWindows()
