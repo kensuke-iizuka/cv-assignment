@@ -2,19 +2,17 @@
 \usepackage{float,array,booktabs,here}
 \usepackage{amsmath}
 \usepackage{bm}
+\usepackage{listings}
 \usepackage[dvipdfmx]{graphicx}
 % \usepackage[whole]{bxcjkjatype}%日本語もコンパイル可にする.
 %\usepackage[dvipdfmx,hiresbb]{graphicx}
-\usepackage[top=25truemm,bottom=25truemm,left=25truemm,right=25truemm]{geometry}
+\usepackage[top=25truemm,bottom=25truemm,left=15truemm,right=15truemm]{geometry}
 
-\title{Computer Vision}
+\title{Computer Vision Final Report}
 \author{81819433 開放環境科学専攻情報工学専修　修士1年　飯塚 健介}
 \date{\today}
 \begin{document}
     \maketitle
-
-    \section{section name}
-    \subsection{subsection name}
 
     \section{目的と課題設定}
     私は主にセグメンテーションについて理解を深めるために授業で習った手法を用いてセグメンテーションの処理を自分で実装して
@@ -37,100 +35,143 @@
     まず、k-means法を用いたセグメンテーションについて検討と実装を行った。
 
     \subsection{k-means法について}
-    \cite{k-means}を参考にアルゴリズムについて検討した。k-meansではいくつのクラスタに分類するかを人が指定しなければいけない。
+    アルゴリズムについて検討した。k-meansではいくつのクラスタに分類するかを人が指定しなければいけない。
     そしてランダムにクラスタリングされた3次元のベクトル(画像のRGBをベクトルの各要素とした)について各クラスタの重心を求める。
     その重心から各ベクトルのユークリッド距離を算出し最小となるクラスタに属するようにする。
     これをクラスタリング結果が前回のクラスタリング結果と一致するまで、もしくはある上限回数行い、各クラスタの重心を決定する。
     ここに新たな入力ベクトルが入ってきた場合には各クラスタの重心とのユークリッド距離を算出し最小となったクラスタに属するようにする。
-    具体例として、図\ref{fig:ex-kmeans-init}に示すようにランダムに生成した2次元ベクトルを基にしてクラスタの重心を求めて、
+    具体例として、ランダムに生成した2次元ベクトルを基にしてクラスタの重心(オレンジの四角形でプロット)を求めて、
     入力データがどのクラスタに属しているかを図\ref{fig:ex-kmeans}に示す。
     バツマークがランダムに生成したベクトル、丸マークで示しているのが入力データである。
     ユークリッド距離が一番近いクラスタに分類されているのがわかる。
 
     \begin{figure}[H]
         \centering
-        \includegraphics[clip,width=4.0cm]{img/ex-kmeans-init.jpg}
-        \caption{ランダムに初期化されたベクトル\label{fig:ex-kmeans-init}}
-    \end{figure} 
-
-    \begin{figure}[H]
-        \centering
-        \includegraphics[clip,width=4.0cm]{img/ex-kmeans.jpg}
+        \includegraphics[clip,width=10.0cm]{img/kmeans_300.png}
         \caption{k-meansによる2次元ベクトルのクラスタリングの様子\label{fig:ex-kmeans}}
     \end{figure} 
 
     \subsection{実装方法}
-    \subsection{結果と考察}
+    画像の入出力のみにOpenCVを使い、他の処理についてはnumpyの行列、ベクトル演算を自分で実装した。
 
+
+    \subsection{結果と考察}
+    以下に何枚かの画像について、自分で実装したk-meansでの処理結果、対象画像、OpenCVのk-meansの関数(cv2.kmeans)による処理結果を示す。
+    クラスタ数はすべて8で統一した。また自分の実装、OpenCVのkmeansともに、各クラスタの色の塗り方はクラスタ重心となるRGB値を用いた。
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[clip,width=80mm]{img/good_meal.jpg}
+        \caption{隠岐の島での豪華ディナーのオリジナル画像\label{fig:good_meal}}
+    \end{figure} 
+
+    \begin{figure}[htbp]
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/good_meal_result.jpg}
+         \end{center}
+         \caption{隠岐の島での豪華ディナー(自作k-means)}
+        \end{minipage}
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/good_meal_opencv.jpg}
+         \end{center}
+         \caption{隠岐の島での豪華ディナー(cv2.kmeans)}
+        \end{minipage}
+    \end{figure} 
+    自作したk-meansとライブラリのもので違いがあるが、この画像の場合には自作のもののほうがより色味を再現できている。
+    お肉の赤みやお皿の青い模様などをそのまま残している。しかし野菜などの緑色はライブラリのもののほうが色味を残している。
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[clip,width=80mm]{img/sakura.jpg}
+        \caption{卒業式の日吉キャンパスのオリジナル画像\label{fig:sakura}}
+    \end{figure} 
+
+    \begin{figure}[htbp]
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/sakura_result.jpg}
+         \end{center}
+         \caption{卒業式の日吉キャンパス(自作k-means)}
+        \end{minipage}
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/sakura_opencv.jpg}
+         \end{center}
+         \caption{卒業式の日吉キャンパス(cv2.kmeans)}
+        \end{minipage}
+    \end{figure} 
+    次に今年の卒業式で撮影した桜の木の写真について見ていく。この場合はライブラリのもののほうがより明るい色となっている。
+    自作のものについては空の青も保存されていない。
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[clip,width=80mm]{img/mydesk.jpg}
+        \caption{自宅の作業机のオリジナル画像\label{fig:mydesk}}
+    \end{figure} 
+
+    \begin{figure}[htbp]
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/mydesk_result.jpg}
+         \end{center}
+         \caption{自宅の作業机(自作k-means)}
+        \end{minipage}
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/mydesk_opencv.jpg}
+         \end{center}
+         \caption{自宅の作業机(cv2.kmeans)}
+        \end{minipage}
+    \end{figure} 
+    次に自宅の机の上を撮影した写真を見る。この画像がこのレポート中で一番ライブラリと自作のものについて大きな違いがある。
+    スマートフォンの水色と紙の白が一体となってしまっている。画像の全体で比較的黒いものが多いので、そこにクラスタも引っ張られてしまっているように考える。
+    マウスパッドの模様も自作のほうは消えてしまっている。
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[clip,width=80mm]{img/metro.jpg}
+        \caption{都庁展望台からの眺めのオリジナル画像\label{fig:metro}}
+    \end{figure} 
+
+    \begin{figure}[htbp]
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/metro_result.jpg}
+         \end{center}
+         \caption{都庁展望台からの眺め(自作k-means)}
+        \end{minipage}
+        \begin{minipage}{0.5\hsize}
+         \begin{center}
+          \includegraphics[width=80mm]{img/metro_opencv.jpg}
+         \end{center}
+         \caption{都庁展望台からの眺め(cv2.kmeans)}
+        \end{minipage}
+    \end{figure} 
+    都庁の画像は比較的白っぽいビルの面積が多いので、そこまで差が出ないと予想していたがやはり自作のもののほうが色味が暗くなってしまい、
+    ライブラリのほうが鮮明である。
     \section{混合ガウシアンモデルを用いたセグメンテーション}
     \subsection{混合ガウシアンモデルについて}
-    混合ガウシアンモデルとは確率分布としてよく用いられる\ref{eq:gaussian}
-    で示される確率分布関数を複数重ね合わせたものである。
-    式で表すと\ref{eq:mixture-gaussian}である。
+    混合ガウシアンモデルとは確率分布としてよく用いられるガウス分布の確率分布関数を複数重ね合わせたものである。
 
-    具体例として、図\ref{fig:ex-mg}にランダムに生成した2次元ベクトルを基にしてクラスタの重心を求めて、
-    入力データがどのクラスタに属しているかを図\ref{fig:ex-kmeans}に示す。
+    具体例として、k-means同様に、ランダムに生成した2次元ベクトルを基にしてクラスタの重心を求めて、
+    入力データがどのクラスタに属しているかを図\ref{fig:ex-gauss}に示す。
     バツマークがランダムに生成したベクトル、丸マークで示しているのが入力データである。
     ユークリッド距離が一番近いクラスタに分類されているのがわかる。
 
-    \begin{figure}[H]
-        \centering
-        \includegraphics[clip,width=4.0cm]{img/ex-kmeans-init.jpg}
-        \caption{ランダムに初期化されたベクトル\label{fig:ex-kmeans-init}}
-    \end{figure} 
 
     \begin{figure}[H]
         \centering
-        \includegraphics[clip,width=4.0cm]{img/ex-kmeans.jpg}
-        \caption{k-meansによる2次元ベクトルのクラスタリングの様子\label{fig:ex-kmeans}}
+        \includegraphics[clip,width=10.0cm]{img/gauss_5000.png}
+        \caption{混合ガウシアンモデルによる2次元ベクトルのクラスタリングの様子\label{fig:ex-gauss}}
     \end{figure} 
     \subsection{実装方法}
-    \subsection{結果と考察}
+    上図の2次元でのクラスタリングのためにNumpyで実装したコードのベクトルを3次元に拡張させて画像のセグメンテーションを行おうとしたが、
+    上手く実装できなかった。
 
-    \section{mean-shiftを用いたセグメンテーション}
-    \subsection{mean-shiftについて}
-    \subsection{実装方法}
-    \subsection{結果と考察}
-
-    \section{結論とまとめ}
-
-    \begin{thebibliography}{9}
-        \bibitem{k-means} http://home.deib.polimi.it/matteucc/Clustering/tutorial_html/kmeans.html
-        \bibitem{susan} S. M. Smith and J. M. Brady,
-          ``SUSAN|A new approach to low level image processing,'' Int. J. Comput.
-          Vis., vol.23, no.1, pp.45-78, May 1997.
-      \end{thebibliography}
-
-    \begin{figure}[H]
-      \centering
-      \includegraphics[clip,width=4.0cm]{img/metro.jpg}
-      \caption{都庁南展望台からの写真\label{fig:cute}}
-    \end{figure}
-
-    \begin{equation}
-        s\left(
-        \begin{array}{c}
-            u \\
-            v \\
-            1
-        \end{array}
-        \right) =
-        \left(
-    \begin{array}{cccc}
-      P_{11} & P_{12} & P_{13} & P_{14}\\
-      P_{21} & P_{22} & P_{23} & P_{24} \\
-      P_{31} & P_{32} & P_{33} & P_{34} \\
-    \end{array}
-        \right)
-        \left(
-        \begin{array}{c}
-            X \\
-            Y \\
-            Z \\
-            1
-        \end{array}
-        \right)
-        \label{eq:projection_matrix}
-    \end{equation}
-
-\end{document}
+    \section{結論}
+    セグメンテーションについてより詳しく知るためにk-means法を自分で実装してOpenCVライブラリの実装との比較を行った。
+    力及ばず他のアルゴリズムについては検討できなかったが、実装が比較的単純なk-meansでもオリジナルの画像やライブラリの関数で処理したものと比べて上手くセグメンテーションができていない。
+    原因として考えられるのは自分がプログラムを書く際にnumpyの挙動について、勉強不足で一部の途中の演算の処理でエラーが起きてしまったりしていることが要因と考えられる。
+    
